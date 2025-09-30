@@ -1,9 +1,6 @@
 package com.example.sparta.service;
 
-import com.example.sparta.dto.OrderItemReadDto;
-import com.example.sparta.dto.OrderReadDto;
-import com.example.sparta.dto.OrderSimpleDto;
-import com.example.sparta.dto.ProductReadDto;
+import com.example.sparta.dto.*;
 import com.example.sparta.entity.Order;
 import com.example.sparta.entity.OrderItem;
 import com.example.sparta.entity.Product;
@@ -52,10 +49,10 @@ public class QueryService {
             cacheNames = "order:summaries",
             key = "#userId + ':' + #pageable.pageNumber + '-' + #pageable.pageSize",
             condition = "#pageable.pageNumber < 50",
-            unless = "#result == null || #result.isEmpty()"
+            unless = "#result == null ||  #result.totalElements() == 0"
     )
-    public Page<OrderSimpleDto> getUserOrderSummaries(Long userId, Pageable pageable) {
-        return orderRepository.findSummariesByUserId(userId, pageable);
+    public PageResponse<OrderSimpleDto> getUserOrderSummaries(Long userId, Pageable pageable) {
+        return PageResponse.from(orderRepository.findSummariesByUserId(userId, pageable));
     }
 
     @Cacheable(cacheNames = "product:list",

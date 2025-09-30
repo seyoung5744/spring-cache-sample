@@ -2,6 +2,7 @@ package com.example.sparta.controller;
 
 import com.example.sparta.dto.OrderReadDto;
 import com.example.sparta.dto.OrderSimpleDto;
+import com.example.sparta.dto.PageResponse;
 import com.example.sparta.dto.ProductReadDto;
 import com.example.sparta.service.QueryService;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ public class QueryController {
 
     // 사용자별 주문 목록(요약)
     @GetMapping("/users/{userId}/orders")
-    public Page<OrderSimpleDto> getUserOrders(
+    public PageResponse<OrderSimpleDto> getUserOrders(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
