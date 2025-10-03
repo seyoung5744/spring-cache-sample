@@ -9,12 +9,12 @@ import com.example.sparta.entity.OrderItem;
 import com.example.sparta.entity.Product;
 import com.example.sparta.repository.OrderRepository;
 import com.example.sparta.repository.ProductRepository;
+import java.util.List;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,6 +29,11 @@ public class QueryService {
         this.productRepository = productRepository;
     }
 
+    @Cacheable(
+            cacheNames = "order:detail",
+            key = "#orderId",
+            unless = "#result == null"
+    )
     public OrderReadDto getOrderDetail(Long orderId) {
         Order order = orderRepository.findByIdWithItems(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
@@ -44,10 +49,22 @@ public class QueryService {
         return new OrderReadDto(order.getId(), order.getUser().getId(), items, totalPrice);
     }
 
+    @Cacheable(
+            cacheNames = "order:summaries",
+            key = "#userId + ':' + #pageable.pageNumber + '-' + #pageable.pageSize",
+            condition = "#pageable.pageNumber < 50",
+            unless = "#result == null || #result.totalElements == 0"
+    )
     public Page<OrderSimpleDto> getUserOrderSummaries(Long userId, Pageable pageable) {
         return orderRepository.findSummariesByUserId(userId, pageable);
     }
 
+    @Cacheable(
+            cacheNames = "product:list",
+            key = "#pageable.pageNumber + '-' + #pageable.pageSize",
+            condition = "#pageable.pageNumber < 50",
+            unless = "#result == null || #result.totalElements == 0"
+    )
     public Page<ProductReadDto> listProducts(Pageable pageable) {
         return productRepository.findAll(pageable)
                 .map(this::toProductDto);
