@@ -1,9 +1,9 @@
-package com.example.sparta.config;
-
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Configuration;
-
-@EnableCaching
-@Configuration
-public class CacheConfig {
-}
+//package com.example.sparta.config;
+//
+//import org.springframework.cache.annotation.EnableCaching;
+//import org.springframework.context.annotation.Configuration;
+//
+//@EnableCaching
+//@Configuration
+//public class CacheConfig {
+//}
